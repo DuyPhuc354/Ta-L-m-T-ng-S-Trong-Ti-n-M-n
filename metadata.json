@@ -1,0 +1,7 @@
+{
+  "name": "Hộ Pháp Tông Môn AI",
+  "description": "Trợ lý AI phân tích, tuyển chọn và tối ưu đội hình đệ tử cho game Ta Làm Tông Sư Trong Tiên Môn.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
