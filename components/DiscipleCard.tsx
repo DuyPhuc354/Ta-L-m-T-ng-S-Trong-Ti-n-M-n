@@ -1,6 +1,6 @@
+
 import React from 'react';
-import { Disciple, Role } from '../types';
-import DiscipleRadarChart from './RadarChart';
+import { Disciple } from '../types';
 
 interface Props {
   disciple: Disciple;
@@ -8,115 +8,89 @@ interface Props {
 }
 
 const DiscipleCard: React.FC<Props> = ({ disciple, onDelete }) => {
-  const isRecruit = disciple.verdict === 'RECRUIT';
-  const isReject = disciple.verdict === 'REJECT';
-  const isWorker = disciple.verdict === 'KEEP_WORKER';
+  const { verdict, name, primaryElement, analysis, originClass } = disciple;
 
-  const borderColor = isRecruit 
-    ? 'border-emerald-500' 
-    : isWorker 
-      ? 'border-blue-500' 
-      : 'border-red-500';
+  let badgeColor = '';
+  let badgeText = '';
+  let borderColor = '';
+  let bgGradient = '';
 
-  const headerColor = isRecruit 
-    ? 'bg-emerald-900/50 text-emerald-200' 
-    : isWorker 
-      ? 'bg-blue-900/50 text-blue-200' 
-      : 'bg-red-900/50 text-red-200';
-
-  const getRoleDisplayName = (role: Role) => {
-    switch(role) {
-      case Role.DPS: return 'DPS (Sát Thương)';
-      case Role.TANK: return 'TANK (Chịu Đòn)';
-      case Role.HEALER: return 'HEALER (Hồi Máu)';
-      case Role.CROWD_CONTROL: return 'CC (Khống Chế)';
-      case Role.EXPLORER_CAPTAIN: return 'Thám Hiểm';
-      case Role.MASTER_CRAFTSMAN: return 'Thợ Chuyên Nghiệp';
-      case Role.FODDER: return 'Phế Vật';
-      case Role.SPECIAL_CASE: return 'Đặc Biệt';
-      default: return role.replace('_', ' ');
-    }
+  switch (verdict) {
+    case 'RECRUIT':
+      badgeColor = 'bg-emerald-500 text-white';
+      badgeText = 'CHIÊU MỘ';
+      borderColor = 'border-emerald-500/50';
+      bgGradient = 'from-emerald-900/20 to-transparent';
+      break;
+    case 'KEEP_WORKER':
+      badgeColor = 'bg-blue-500 text-white';
+      badgeText = 'NÔ LỆ';
+      borderColor = 'border-blue-500/50';
+      bgGradient = 'from-blue-900/20 to-transparent';
+      break;
+    case 'EXPEL_CANDIDATE':
+      badgeColor = 'bg-yellow-500 text-black';
+      badgeText = 'CÓ THỂ TRỤC XUẤT';
+      borderColor = 'border-yellow-500/50';
+      bgGradient = 'from-yellow-900/20 to-transparent';
+      break;
+    case 'REJECT':
+      badgeColor = 'bg-red-600 text-white';
+      badgeText = 'TRỤC XUẤT';
+      borderColor = 'border-red-600/50';
+      bgGradient = 'from-red-900/20 to-transparent';
+      break;
   }
 
+  const elementColors: Record<string, string> = {
+    'Kim': 'text-yellow-200',
+    'Mộc': 'text-green-400',
+    'Thủy': 'text-blue-400',
+    'Hỏa': 'text-red-400',
+    'Thổ': 'text-orange-300',
+    'Tạp': 'text-gray-400',
+  };
+
   return (
-    <div className={`relative bg-sect-panel border-2 ${borderColor} rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-xl`}>
+    <div className={`relative group bg-sect-panel rounded-lg border ${borderColor} p-3 flex items-center gap-4 shadow-md hover:bg-slate-800 transition-all overflow-hidden`}>
+      {/* Subtle Background Gradient */}
+      <div className={`absolute inset-0 bg-gradient-to-r ${bgGradient} pointer-events-none`} />
+
+      {/* Delete Button (Hover only) */}
       <button 
-        onClick={() => onDelete(disciple.id)}
-        className="absolute top-2 right-2 z-10 text-slate-400 hover:text-red-400"
+        onClick={(e) => { e.stopPropagation(); onDelete(disciple.id); }}
+        className="absolute top-2 right-2 text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        title="Xóa"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
 
-      <div className={`px-4 py-2 flex justify-between items-center ${headerColor}`}>
-        <div>
-          <h3 className="font-bold text-lg">{disciple.name}</h3>
-          <span className="text-xs uppercase tracking-wider font-semibold opacity-80">
-            {disciple.originClass} - {getRoleDisplayName(disciple.role)}
+      {/* Main Content */}
+      <div className="flex-grow flex flex-col md:flex-row md:items-center gap-2 md:gap-4 z-0">
+        
+        {/* Left: Name & Element */}
+        <div className="min-w-[140px]">
+          <div className="flex items-baseline gap-2">
+            <h3 className="font-bold text-slate-200 text-lg leading-tight">{name}</h3>
+            <span className={`text-xs font-bold uppercase ${elementColors[primaryElement] || 'text-gray-400'}`}>
+              {primaryElement}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 font-medium">{originClass}</p>
+        </div>
+
+        {/* Middle: Verdict Badge */}
+        <div className="shrink-0">
+          <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold tracking-wider shadow-sm ${badgeColor}`}>
+            {badgeText}
           </span>
         </div>
-        <div className="text-right">
-          <span className="block text-2xl font-black">{disciple.stats.potential}</span>
-          <span className="text-[10px] uppercase">Tiềm Lực</span>
-        </div>
-      </div>
 
-      <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="flex flex-col justify-center">
-          <DiscipleRadarChart stats={disciple.stats} height={200} />
-        </div>
-
-        <div className="space-y-3 text-sm">
-          {/* Verdict Badge */}
-          <div className="mb-2">
-             {isRecruit && <span className="bg-emerald-500 text-white px-2 py-1 rounded text-xs font-bold">NÊN CHIÊU MỘ</span>}
-             {isWorker && <span className="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">NÔ LỆ/THỢ</span>}
-             {isReject && <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">TRỤC XUẤT/HIẾN TẾ</span>}
-          </div>
-
-          {/* Traits */}
-          <div>
-            <p className="text-slate-400 text-xs font-bold mb-1 uppercase">Đặc Chất (Traits)</p>
-            <div className="flex flex-wrap gap-1">
-              {disciple.traits.map((t, idx) => (
-                <span 
-                  key={idx} 
-                  className={`px-2 py-0.5 rounded text-xs border ${
-                    t.tier === 'S' ? 'bg-yellow-600/30 border-yellow-500 text-yellow-200' :
-                    t.isPositive ? 'bg-emerald-600/30 border-emerald-500 text-emerald-200' : 
-                    'bg-red-600/30 border-red-500 text-red-200'
-                  }`}
-                  title={t.description}
-                >
-                  {t.name}
-                </span>
-              ))}
-              {disciple.traits.length === 0 && <span className="text-slate-500 italic">Không có</span>}
-            </div>
-          </div>
-
-           {/* Skills */}
-           <div>
-            <p className="text-slate-400 text-xs font-bold mb-1 uppercase">Kỹ Năng (Nghề)</p>
-            <div className="flex flex-wrap gap-1">
-              {disciple.skills.map((s, idx) => (
-                <span key={idx} className="px-2 py-0.5 rounded text-xs bg-slate-700 border border-slate-600 text-slate-200">
-                  {s.name}: {s.level}
-                </span>
-              ))}
-              {disciple.skills.length === 0 && <span className="text-slate-500 italic">Không nổi bật</span>}
-            </div>
-          </div>
-
-           {/* Element */}
-           <div>
-            <p className="text-slate-400 text-xs font-bold mb-1 uppercase">Hệ Chính</p>
-            <span className="text-slate-200">{disciple.primaryElement}</span>
-          </div>
-
-          {/* Reasoning */}
-          <div className="mt-2 pt-2 border-t border-slate-700">
-            <p className="text-xs text-slate-300 italic">"{disciple.analysis}"</p>
-          </div>
+        {/* Right: Reason */}
+        <div className="flex-grow border-l border-slate-700 pl-0 md:pl-4 mt-1 md:mt-0">
+          <p className="text-sm text-slate-300 italic line-clamp-2 md:line-clamp-1">
+            "{analysis}"
+          </p>
         </div>
       </div>
     </div>

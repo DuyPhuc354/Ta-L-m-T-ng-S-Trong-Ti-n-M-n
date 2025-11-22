@@ -1,15 +1,14 @@
 
-
 export enum Role {
-  COMBAT_MAIN = 'COMBAT_MAIN', // Chủ lực chiến đấu
-  DPS = 'DPS', // Sát thương chủ lực
-  TANK = 'TANK', // Chịu đòn
-  HEALER = 'HEALER', // Hồi máu
-  CROWD_CONTROL = 'CROWD_CONTROL', // Khống chế / Buff
-  EXPLORER_CAPTAIN = 'EXPLORER_CAPTAIN', // Thám hiểm chính
-  MASTER_CRAFTSMAN = 'MASTER_CRAFTSMAN', // Thợ chuyên nghiệp / Nòng cốt kinh tế
-  FODDER = 'FODDER', // Phế vật / Trục xuất
-  SPECIAL_CASE = 'SPECIAL_CASE', // Trường hợp đặc biệt (VD: Trư Bát Giới)
+  COMBAT_MAIN = 'COMBAT_MAIN',
+  DPS = 'DPS',
+  TANK = 'TANK',
+  HEALER = 'HEALER',
+  CROWD_CONTROL = 'CROWD_CONTROL',
+  EXPLORER_CAPTAIN = 'EXPLORER_CAPTAIN',
+  MASTER_CRAFTSMAN = 'MASTER_CRAFTSMAN',
+  FODDER = 'FODDER',
+  SPECIAL_CASE = 'SPECIAL_CASE',
 }
 
 export enum ElementType {
@@ -22,12 +21,12 @@ export enum ElementType {
 }
 
 export interface DiscipleStats {
-  potential: number; // Tiềm Lực
-  aptitude: number;   // Tư Chất (thay cho Khí Cảm, quyết định tấn công và tốc độ tu luyện)
-  bone: number;      // Căn Cốt
-  intelligence: number; // Thông Tuệ
-  charm: number;     // Mị Lực
-  luck: number;      // Cơ Duyên
+  potential: number;
+  aptitude: number;
+  bone: number;
+  intelligence: number;
+  charm: number;
+  luck: number;
 }
 
 export interface Trait {
@@ -38,23 +37,25 @@ export interface Trait {
 }
 
 export interface Skill {
-  name: string; // e.g., Luyện Đan, Luyện Khí, Kiếm Tu
+  name: string;
   level: number;
 }
 
+export type Verdict = 'RECRUIT' | 'KEEP_WORKER' | 'EXPEL_CANDIDATE' | 'REJECT';
+
 export interface Disciple {
   id: string;
-  imageHash?: string; // Unique hash of the source image to prevent duplicates
+  imageHash?: string;
   name: string;
-  originClass: string; // Xuất thân (e.g., Kiếm Tu, Binh Gia, Y Sư)
+  originClass: string;
   stats: DiscipleStats;
   traits: Trait[];
   skills: Skill[];
-  primaryElement: ElementType; // Highest element
-  verdict: 'RECRUIT' | 'KEEP_WORKER' | 'REJECT';
+  primaryElement: ElementType;
+  verdict: Verdict;
   role: Role;
-  analysis: string; // AI Reasoning
-  score: number; // Calculated score for sorting
+  analysis: string; // Short reason
+  score: number;
 }
 
 export interface AnalysisResult {
